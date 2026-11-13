@@ -66,6 +66,7 @@
         root.setAttribute('data-card', d.card || 'outline');
         root.setAttribute('data-nav', d.nav || 'both');
         if (d.toggle !== 'on') root.setAttribute('data-toggle', 'off');
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) root.classList.add('custom-scrollbar');
       })();
     </script>
 
@@ -75,7 +76,9 @@
         body::after { opacity: var(--bg-overlay); }
       </style>
       <s_not_var_bgImageDark>
-        <style>:root[data-mode="dark"] body::before { background-image: url("[##_var_bgImage_##]"); }</style>
+        <style>
+          :root[data-mode="dark"] body::before { background-image: url("[##_var_bgImage_##]"); }
+        </style>
       </s_not_var_bgImageDark>
     </s_if_var_bgImage>
     <s_if_var_bgImageDark>
@@ -709,11 +712,6 @@
         <s_if_var_navName5><a href="[##_var_navUrl5_##]"><i class="[##_var_navIcon5_##]"></i><span>[##_var_navName5_##]</span></a></s_if_var_navName5>
       </nav>
 
-      <!-- 맨 위 / 맨 아래 버튼 -->
-      <div class="scroll-btns">
-        <button type="button" class="scroll-top-btn" id="scroll-up" aria-label="맨 위로" title="맨 위로"><i class="fa-solid fa-arrow-up"></i></button>
-        <button type="button" class="scroll-top-btn" id="scroll-down" aria-label="맨 아래로" title="맨 아래로"><i class="fa-solid fa-arrow-down"></i></button>
-      </div>
     </div>
 
     <!-- 검색 시트 -->

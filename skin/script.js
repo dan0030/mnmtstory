@@ -361,40 +361,83 @@
       });
     }
 
-    /* ---------- 7. 상단 바 · 스크롤 버튼 ---------- */
+    /* ---------- 7. 상단 바 ---------- */
     var topbar = $('.topbar');
-    var upBtn = document.getElementById('scroll-up');
-    var downBtn = document.getElementById('scroll-down');
-    /* 스크롤마다 레이아웃을 다시 계산하지 않도록: 높이는 캐시, 프레임당 한 번만 처리 */
-    var maxScroll = 0;
-    var measure = function () { maxScroll = document.documentElement.scrollHeight - window.innerHeight; };
-    var state = {};
-    var setClass = function (el, cls, on, key) {
-      if (!el || state[key] === on) return;
-      state[key] = on;
-      el.classList.toggle(cls, on);
-    };
-    var ticking = false;
-    var update = function () {
-      ticking = false;
-      var y = window.scrollY;
-      setClass(topbar, 'scrolled', y > 24, 'top');
-      setClass(upBtn, 'show', y > 300, 'up');
-      setClass(downBtn, 'show', maxScroll > 600 && y < maxScroll - 300, 'down');
-    };
-    var onScroll = function () {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(update);
-    };
-    measure();
-    if (window.ResizeObserver) new ResizeObserver(function () { measure(); onScroll(); }).observe(document.body);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', function () { measure(); onScroll(); }, { passive: true });
-    window.addEventListener('load', function () { measure(); onScroll(); });
-    update();
-    if (upBtn) upBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    if (downBtn) downBtn.addEventListener('click', function () { window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }); });
+    if (topbar) {
+      var scrolled = false;
+      var ticking = false;
+      var update = function () {
+        ticking = false;
+        var on = window.scrollY > 24;
+        if (on !== scrolled) { scrolled = on; topbar.classList.toggle('scrolled', on); }
+      };
+      window.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      }, { passive: true });
+      update();
+    }
+
+    /* ---------- 7-1. 떠 있는 스크롤바 (마우스 환경) ---------- */
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      root.classList.add('custom-scrollbar');
+      var sbBox = document.createElement('div');
+      sbBox.className = 'page-scrollbar';
+      sbBox.setAttribute('aria-hidden', 'true');
+      var sbThumb = document.createElement('div');
+      sbThumb.className = 'page-scrollbar-thumb';
+      sbBox.appendChild(sbThumb);
+      document.body.appendChild(sbBox);
+
+      var docH = 0, viewH = 0, thumbH = 0, sbTick = false;
+      var sbMeasure = function () {
+        docH = document.documentElement.scrollHeight;
+        viewH = window.innerHeight;
+        var scrollable = docH > viewH + 1;
+        sbBox.classList.toggle('is-hidden', !scrollable);
+        if (!scrollable) return;
+        thumbH = Math.max(40, viewH * viewH / docH);
+        sbThumb.style.height = thumbH + 'px';
+      };
+      var sbPaint = function () {
+        sbTick = false;
+        var range = docH - viewH;
+        if (range <= 0) return;
+        var y = Math.min(Math.max(window.scrollY / range, 0), 1) * (viewH - thumbH);
+        sbThumb.style.transform = 'translateY(' + y + 'px)';
+      };
+      var sbQueue = function () { if (!sbTick) { sbTick = true; requestAnimationFrame(sbPaint); } };
+      var sbRefresh = function () { sbMeasure(); sbQueue(); };
+      sbRefresh();
+      window.addEventListener('scroll', sbQueue, { passive: true });
+      window.addEventListener('resize', sbRefresh, { passive: true });
+      window.addEventListener('load', sbRefresh);
+      if (window.ResizeObserver) new ResizeObserver(sbRefresh).observe(document.body);
+
+      var dragStartY = 0, dragStartScroll = 0;
+      sbThumb.addEventListener('pointerdown', function (e) {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        sbMeasure();
+        dragStartY = e.clientY;
+        dragStartScroll = window.scrollY;
+        sbThumb.setPointerCapture(e.pointerId);
+        sbBox.classList.add('dragging');
+        root.classList.add('scrollbar-dragging');
+      });
+      sbThumb.addEventListener('pointermove', function (e) {
+        if (!sbBox.classList.contains('dragging')) return;
+        var ratio = (docH - viewH) / Math.max(1, viewH - thumbH);
+        window.scrollTo(0, dragStartScroll + (e.clientY - dragStartY) * ratio);
+      });
+      var sbEnd = function () {
+        sbBox.classList.remove('dragging');
+        root.classList.remove('scrollbar-dragging');
+      };
+      sbThumb.addEventListener('pointerup', sbEnd);
+      sbThumb.addEventListener('pointercancel', sbEnd);
+    }
 
     /* ---------- 8. 목록 ---------- */
     var viewStyles = ['list', 'gallery', 'memo'];
