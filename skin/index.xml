@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skin>
+  <information>
+    <name>3477 simple skin - IF</name>
+    <version>2.0</version>
+    <description><![CDATA[커버 10종, 목록 3종 간단 스킨 · 브라우저 프레임 / 하단 메뉴 / 배경 이미지 / 라이트·다크 테마 디자인]]></description>
+    <license><![CDATA[스킨 수정 자유. 스킨 수정 후에도 재배포 불가.]]></license>
+  </information>
+
+  <author>
+    <name>odan</name>
+    <homepage></homepage>
+  </author>
+
+  <default>
+    <contentWidth>760</contentWidth>
+  </default>
+
+  <liststyle>
+    <item>
+      <label>리스트 보기</label>
+      <value>list</value>
+    </item>
+    <item>
+      <label>갤러리 보기</label>
+      <value>gallery</value>
+    </item>
+    <item>
+      <label>메모 보기</label>
+      <value>memo</value>
+    </item>
+  </liststyle>
+
+  <variables>
+    <variablegroup name="1. 라이트 모드 색상">
+      <variable><name>pointColor</name><label>포인트 컬러 (강조색)</label><type>COLOR</type><default>#494d5b</default></variable>
+      <variable><name>onPointColor</name><label>포인트 컬러 위 글자색</label><type>COLOR</type><default>#ffffff</default></variable>
+      <variable><name>bgColor</name><label>배경 색상</label><type>COLOR</type><default>#f6f6f6</default></variable>
+      <variable><name>surfaceColor</name><label>카드 색상</label><type>COLOR</type><default>#ffffff</default></variable>
+      <variable><name>mainTextColor</name><label>본문 글자 색상</label><type>COLOR</type><default>#111114</default></variable>
+      <variable><name>subTextColor</name><label>보조 글자 색상</label><type>COLOR</type><default>#6d6d72</default></variable>
+      <variable><name>lineColor</name><label>구분선 색상</label><type>COLOR</type><default>#e1e1e1</default></variable>
+      <variable><name>menuBg</name><label>메뉴(서랍) 배경 색상</label><type>COLOR</type><default>#f6f6f6</default></variable>
+      <variable><name>memoBgColor</name><label>메모 목록 배경 색상</label><type>COLOR</type><default>#f1f1f1</default></variable>
+    </variablegroup>
+
+    <variablegroup name="2. 다크 모드 색상">
+      <variable><name>darkPointColor</name><label>포인트 컬러 (강조색)</label><type>COLOR</type><default>#f5f5f5</default></variable>
+      <variable><name>darkOnPointColor</name><label>포인트 컬러 위 글자색</label><type>COLOR</type><default>#111111</default></variable>
+      <variable><name>darkBgColor</name><label>배경 색상</label><type>COLOR</type><default>#0a0a0a</default></variable>
+      <variable><name>darkSurfaceColor</name><label>카드 색상</label><type>COLOR</type><default>#141414</default></variable>
+      <variable><name>darkTextColor</name><label>본문 글자 색상</label><type>COLOR</type><default>#f7f7f8</default></variable>
+      <variable><name>darkSubTextColor</name><label>보조 글자 색상</label><type>COLOR</type><default>#9c9ca2</default></variable>
+      <variable><name>darkLineColor</name><label>구분선 색상</label><type>COLOR</type><default>#2c2c2f</default></variable>
+      <variable><name>darkMenuBg</name><label>메뉴(서랍) 배경 색상</label><type>COLOR</type><default>#121212</default></variable>
+      <variable><name>darkMemoBgColor</name><label>메모 목록 배경 색상</label><type>COLOR</type><default>#202020</default></variable>
+    </variablegroup>
+
+    <variablegroup name="3. 테마 · 배경">
+      <variable><name>themeMode</name><label>기본 화면 모드</label><type>SELECT</type><default>auto</default>
+        <option><![CDATA[
+          [
+            {"name":"auto","label":"기기 설정 따르기","value":"auto"},
+            {"name":"light","label":"라이트","value":"light"},
+            {"name":"dark","label":"다크","value":"dark"}
+          ]
+        ]]></option>
+      </variable>
+      <variable><name>allowToggle</name><label>방문자가 라이트/다크 전환 가능</label><type>BOOL</type><default>true</default></variable>
+      <variable><name>bgImage</name><label>배경 이미지 (라이트)</label><type>IMAGE</type><default></default></variable>
+      <variable><name>bgImageDark</name><label>배경 이미지 (다크, 비우면 라이트 이미지 사용)</label><type>IMAGE</type><default></default></variable>
+      <variable><name>bgBlur</name><label>배경 이미지 흐림</label><type>SELECT</type><default>2px</default>
+        <option><![CDATA[
+          [
+            {"name":"0px","label":"없음","value":"0px"},
+            {"name":"2px","label":"살짝","value":"2px"},
+            {"name":"6px","label":"보통","value":"6px"},
+            {"name":"14px","label":"많이","value":"14px"}
+          ]
+        ]]></option>
+      </variable>
+      <variable><name>bgOverlay</name><label>배경색 덮기 (글씨 잘 보이게)</label><type>SELECT</type><default>0.65</default>
+        <option><![CDATA[
+          [
+            {"name":"0","label":"없음","value":"0"},
+            {"name":"0.35","label":"35%","value":"0.35"},
+            {"name":"0.5","label":"50%","value":"0.5"},
+            {"name":"0.65","label":"65%","value":"0.65"},
+            {"name":"0.8","label":"80%","value":"0.8"}
+          ]
+        ]]></option>
+      </variable>
+      <variable><name>cardStyle</name><label>카드 모양</label><type>SELECT</type><default>outline</default>
+        <option><![CDATA[
+          [
+            {"name":"outline","label":"테두리","value":"outline"},
+            {"name":"shadow","label":"그림자","value":"shadow"},
+            {"name":"flat","label":"평면","value":"flat"},
+            {"name":"glass","label":"유리","value":"glass"}
+          ]
+        ]]></option>
+      </variable>
+      <variable><name>cornerRadius</name><label>모서리 둥글기</label><type>SELECT</type><default>20px</default>
+        <option><![CDATA[
+          [
+            {"name":"12px","label":"작게","value":"12px"},
+            {"name":"20px","label":"보통","value":"20px"},
+            {"name":"26px","label":"크게","value":"26px"}
+          ]
+        ]]></option>
+      </variable>
+      <variable><name>contentFrame</name><label>글·목록 페이지를 브라우저 창 모양으로 감싸기</label><type>BOOL</type><default>true</default></variable>
+      <variable><name>navStyle</name><label>메뉴 형태</label><type>SELECT</type><default>both</default>
+        <option><![CDATA[
+          [
+            {"name":"both","label":"서랍 메뉴 + 하단 메뉴","value":"both"},
+            {"name":"drawer","label":"서랍 메뉴만","value":"drawer"},
+            {"name":"bottom","label":"하단 메뉴만","value":"bottom"}
+          ]
+        ]]></option>
+      </variable>
+      <variable><name>footerText</name><label>바닥글 문구</label><type>STRING</type><default></default></variable>
+    </variablegroup>
+
+    <variablegroup name="4. 홈 · 프로필">
+      <variable><name>homeTitleImage</name><label>홈 타이틀 이미지 (블로그 제목 카드, 비우면 숨김)</label><type>IMAGE</type><default></default></variable>
+      <variable><name>homeTitleDim</name><label>홈 타이틀 이미지 어둡게</label><type>SELECT</type><default>0.35</default>
+        <option><![CDATA[
+          [
+            {"name":"0.15","label":"살짝","value":"0.15"},
+            {"name":"0.35","label":"보통","value":"0.35"},
+            {"name":"0.55","label":"많이","value":"0.55"}
+          ]
+        ]]></option>
+      </variable>
+      <variable><name>profileImage</name><label>프로필 이미지 (비우면 블로그 이미지)</label><type>IMAGE</type><default></default></variable>
+      <variable><name>profileRing</name><label>프로필 테두리 색상</label><type>COLOR</type><default>#FECA57</default></variable>
+      <variable><name>profileImage2</name><label>두 번째 프로필 이미지 (넣으면 페어 프로필)</label><type>IMAGE</type><default></default></variable>
+      <variable><name>profileRing2</name><label>두 번째 프로필 테두리 색상</label><type>COLOR</type><default>#BAE1FF</default></variable>
+      <variable><name>pairSymbol</name><label>페어 사이 아이콘 (FontAwesome)</label><type>STRING</type><default>fa-solid fa-star</default></variable>
+      <variable><name>profileName</name><label>프로필 이름</label><type>STRING</type><default>블로그 이름</default></variable>
+      <variable><name>profileId</name><label>프로필 ID</label><type>STRING</type><default>@username</default></variable>
+      <variable><name>profileDesc</name><label>프로필 소개글</label><type>STRING</type><default>환영합니다.</default></variable>
+    </variablegroup>
+
+    <variablegroup name="5. 메뉴 · 카테고리">
+      <variable><name>categoryIcons</name><label>카테고리 아이콘 (이름=아이콘 | 이름=아이콘)</label><type>STRING</type><default>일상=fa-solid fa-mug-hot | 그림=fa-regular fa-image | 글=fa-solid fa-pen-nib</default></variable>
+      <variable><name>tileName1</name><label>메뉴 타일 1 이름 (비우면 숨김)</label><type>STRING</type><default></default></variable>
+      <variable><name>tileUrl1</name><label>메뉴 타일 1 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>tileIcon1</name><label>메뉴 타일 1 아이콘</label><type>STRING</type><default>fa-solid fa-flag</default></variable>
+      <variable><name>tileName2</name><label>메뉴 타일 2 이름 (비우면 숨김)</label><type>STRING</type><default></default></variable>
+      <variable><name>tileUrl2</name><label>메뉴 타일 2 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>tileIcon2</name><label>메뉴 타일 2 아이콘</label><type>STRING</type><default>fa-solid fa-bookmark</default></variable>
+      <variable><name>guestbookIntro</name><label>방명록 안내 문구</label><type>STRING</type><default>찾아와주셔서 감사합니다. 좋은 하루 보내세요 :D</default></variable>
+      <variable><name>guestbookPlaceholder</name><label>방명록 입력창 안내</label><type>STRING</type><default>다녀간 흔적을 남겨주세요.</default></variable>
+      <variable><name>useComments</name><label>글 아래 댓글 영역 사용</label><type>BOOL</type><default>false</default></variable>
+      <variable><name>showExcerpt</name><label>리스트 보기에서 요약 표시</label><type>BOOL</type><default>false</default></variable>
+    </variablegroup>
+
+    <variablegroup name="6. 하단 메뉴 (주소에 #search 입력 시 검색창)">
+      <variable><name>navName1</name><label>하단 메뉴 1 이름</label><type>STRING</type><default>방명록</default></variable>
+      <variable><name>navUrl1</name><label>하단 메뉴 1 주소</label><type>STRING</type><default>/guestbook</default></variable>
+      <variable><name>navIcon1</name><label>하단 메뉴 1 아이콘</label><type>STRING</type><default>fa-regular fa-comment-dots</default></variable>
+      <variable><name>navName2</name><label>하단 메뉴 2 이름</label><type>STRING</type><default>검색</default></variable>
+      <variable><name>navUrl2</name><label>하단 메뉴 2 주소</label><type>STRING</type><default>#search</default></variable>
+      <variable><name>navIcon2</name><label>하단 메뉴 2 아이콘</label><type>STRING</type><default>fa-solid fa-magnifying-glass</default></variable>
+      <variable><name>navName3</name><label>하단 메뉴 3 이름</label><type>STRING</type><default>홈</default></variable>
+      <variable><name>navUrl3</name><label>하단 메뉴 3 주소</label><type>STRING</type><default>/</default></variable>
+      <variable><name>navIcon3</name><label>하단 메뉴 3 아이콘</label><type>STRING</type><default>fa-solid fa-house</default></variable>
+      <variable><name>navName4</name><label>하단 메뉴 4 이름</label><type>STRING</type><default>태그</default></variable>
+      <variable><name>navUrl4</name><label>하단 메뉴 4 주소</label><type>STRING</type><default>/tag</default></variable>
+      <variable><name>navIcon4</name><label>하단 메뉴 4 아이콘</label><type>STRING</type><default>fa-solid fa-hashtag</default></variable>
+      <variable><name>navName5</name><label>하단 메뉴 5 이름</label><type>STRING</type><default>공지</default></variable>
+      <variable><name>navUrl5</name><label>하단 메뉴 5 주소</label><type>STRING</type><default>/notice</default></variable>
+      <variable><name>navIcon5</name><label>하단 메뉴 5 아이콘</label><type>STRING</type><default>fa-solid fa-bullhorn</default></variable>
+    </variablegroup>
+
+    <variablegroup name="7. 링크 설정">
+      <variable><name>linkName1</name><label>링크 1 이름</label><type>STRING</type><default>Instagram</default></variable>
+      <variable><name>linkUrl1</name><label>링크 1 주소</label><type>STRING</type><default>#</default></variable>
+      <variable><name>linkIcon1</name><label>링크 1 아이콘 (FontAwesome)</label><type>STRING</type><default>fa-brands fa-instagram</default></variable>
+      <variable><name>linkName2</name><label>링크 2 이름</label><type>STRING</type><default>YouTube</default></variable>
+      <variable><name>linkUrl2</name><label>링크 2 주소</label><type>STRING</type><default>#</default></variable>
+      <variable><name>linkIcon2</name><label>링크 2 아이콘</label><type>STRING</type><default>fa-brands fa-youtube</default></variable>
+      <variable><name>linkName3</name><label>링크 3 이름</label><type>STRING</type><default></default></variable>
+      <variable><name>linkUrl3</name><label>링크 3 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>linkIcon3</name><label>링크 3 아이콘</label><type>STRING</type><default>fa-solid fa-link</default></variable>
+      <variable><name>linkName4</name><label>링크 4 이름</label><type>STRING</type><default></default></variable>
+      <variable><name>linkUrl4</name><label>링크 4 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>linkIcon4</name><label>링크 4 아이콘</label><type>STRING</type><default>fa-solid fa-link</default></variable>
+    </variablegroup>
+
+    <variablegroup name="8. BGM 설정">
+      <variable><name>bgmTitle1</name><label>BGM 1 제목</label><type>STRING</type><default>Track 1</default></variable>
+      <variable><name>bgmUrl1</name><label>BGM 1 유튜브 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmTitle2</name><label>BGM 2 제목</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmUrl2</name><label>BGM 2 유튜브 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmTitle3</name><label>BGM 3 제목</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmUrl3</name><label>BGM 3 유튜브 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmTitle4</name><label>BGM 4 제목</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmUrl4</name><label>BGM 4 유튜브 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmTitle5</name><label>BGM 5 제목</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmUrl5</name><label>BGM 5 유튜브 주소</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmTitle6</name><label>BGM 6 제목</label><type>STRING</type><default></default></variable>
+      <variable><name>bgmUrl6</name><label>BGM 6 유튜브 주소</label><type>STRING</type><default></default></variable>
+    </variablegroup>
+
+    <variablegroup name="9. 기타 설정">
+      <variable><name>defaultListStyle</name><label>기본 목록 스타일</label><type>SELECT</type><default>list</default>
+        <option><![CDATA[
+          [
+            {"name":"list","label":"리스트 보기","value":"list"},
+            {"name":"gallery","label":"갤러리 보기","value":"gallery"},
+            {"name":"memo","label":"메모 보기","value":"memo"}
+          ]
+        ]]></option>
+      </variable>
+    </variablegroup>
+  </variables>
+
+  <cover>
+    <item>
+      <name>banner</name>
+      <label>배너 커버</label>
+      <description>이미지를 업로드하고 링크를 연결하세요. (여러 개 등록 시 점 표시와 함께 자동 슬라이드)</description>
+    </item>
+    <item>
+      <name>notice</name>
+      <label>공지사항 커버</label>
+      <description>제목과 내용(요약)을 텍스트로 입력하면 클릭 가능한 카드로 출력됩니다.</description>
+    </item>
+    <item>
+      <name>playlist</name>
+      <label>플레이리스트 커버</label>
+      <description>유튜브 링크를 포함하면 플레이어 형태로 하단에 영상과 가사가 노출됩니다.</description>
+    </item>
+    <item>
+      <name>dday</name>
+      <label>디데이 커버</label>
+      <description>제목에 목표 날짜(YYYY-MM-DD), 요약에 아이콘(예: fa-solid fa-heart)을 입력해 설정합니다.</description>
+    </item>
+    <item>
+      <name>calendar</name>
+      <label>캘린더 (일정) 커버</label>
+      <description>이번 달 달력과 일정 목록을 보여줍니다. 제목에 날짜(YYYY-MM-DD, 매년 반복은 MM-DD), 요약에 일정을 입력하세요.</description>
+    </item>
+    <item>
+      <name>gallery</name>
+      <label>갤러리 커버 (그리드)</label>
+      <description>이미지를 3열 그리드 구조로 출력합니다. (1:1 비율 권장)</description>
+    </item>
+    <item>
+      <name>slide_gallery</name>
+      <label>슬라이드 갤러리 커버</label>
+      <description>자동으로 흐르는 가로 스와이프 형식의 갤러리입니다. (16:9 비율 권장)</description>
+    </item>
+    <item>
+      <name>todolist</name>
+      <label>투두리스트 커버</label>
+      <description>제목에 할 일을 적으면 체크박스가 달린 목록으로 출력됩니다.</description>
+    </item>
+    <item>
+      <name>tagcloud</name>
+      <label>태그 클라우드 커버</label>
+      <description>블로그에 설정된 태그 목록을 카드형 클라우드로 출력합니다. (내용 추가 불필요)</description>
+    </item>
+    <item>
+      <name>popular</name>
+      <label>인기글 커버</label>
+      <description>원하는 글을 선택하면 썸네일과 함께 인기글 리스트 형태로 출력합니다.</description>
+    </item>
+  </cover>
+</skin>
