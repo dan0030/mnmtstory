@@ -98,9 +98,17 @@
 
   /* 화면 잠금 (서랍·검색창이 열렸을 때) */
   var locks = 0;
+  var hasGutter = !!(window.CSS && CSS.supports && CSS.supports('scrollbar-gutter', 'stable'));
   function lockScroll(on) {
     locks = Math.max(0, locks + (on ? 1 : -1));
-    document.body.classList.toggle('no-scroll', locks > 0);
+    var lock = locks > 0;
+    if (lock === document.body.classList.contains('no-scroll')) return;
+    /* scrollbar-gutter 미지원 브라우저: 사라지는 스크롤바 폭만큼 채워서 화면이 밀리지 않게 */
+    if (!hasGutter) {
+      var bar = window.innerWidth - document.documentElement.clientWidth;
+      root.style.setProperty('--scrollbar-comp', lock && bar > 0 ? bar + 'px' : '0px');
+    }
+    document.body.classList.toggle('no-scroll', lock);
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -155,6 +163,7 @@
       menuButtons.forEach(function (b) { b.setAttribute('aria-expanded', String(isOpen)); });
       lockScroll(isOpen);
       if (isOpen) {
+        window.dispatchEvent(new Event('skin:draweropen'));
         lastFocus = document.activeElement;
         var closeBtn = document.getElementById('drawer-close');
         if (closeBtn) closeBtn.focus({ preventScroll: true });
@@ -356,16 +365,34 @@
     var topbar = $('.topbar');
     var upBtn = document.getElementById('scroll-up');
     var downBtn = document.getElementById('scroll-down');
-    var onScroll = function () {
-      var y = window.scrollY || document.documentElement.scrollTop;
-      var max = document.documentElement.scrollHeight - window.innerHeight;
-      if (topbar) topbar.classList.toggle('scrolled', y > 24);
-      if (upBtn) upBtn.classList.toggle('show', y > 300);
-      if (downBtn) downBtn.classList.toggle('show', max > 600 && y < max - 300);
+    /* 스크롤마다 레이아웃을 다시 계산하지 않도록: 높이는 캐시, 프레임당 한 번만 처리 */
+    var maxScroll = 0;
+    var measure = function () { maxScroll = document.documentElement.scrollHeight - window.innerHeight; };
+    var state = {};
+    var setClass = function (el, cls, on, key) {
+      if (!el || state[key] === on) return;
+      state[key] = on;
+      el.classList.toggle(cls, on);
     };
+    var ticking = false;
+    var update = function () {
+      ticking = false;
+      var y = window.scrollY;
+      setClass(topbar, 'scrolled', y > 24, 'top');
+      setClass(upBtn, 'show', y > 300, 'up');
+      setClass(downBtn, 'show', maxScroll > 600 && y < maxScroll - 300, 'down');
+    };
+    var onScroll = function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    measure();
+    if (window.ResizeObserver) new ResizeObserver(function () { measure(); onScroll(); }).observe(document.body);
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    onScroll();
+    window.addEventListener('resize', function () { measure(); onScroll(); }, { passive: true });
+    window.addEventListener('load', function () { measure(); onScroll(); });
+    update();
     if (upBtn) upBtn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     if (downBtn) downBtn.addEventListener('click', function () { window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }); });
 
@@ -490,9 +517,13 @@
 
       var timer = null;
       var paused = false;
+      var visible = true;
+      if (window.IntersectionObserver) {
+        new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; }).observe(wrap);
+      }
       var restart = function () {
         clearInterval(timer);
-        timer = setInterval(function () { if (!paused && !document.hidden) go(index + 1); }, 5000);
+        timer = setInterval(function () { if (!paused && visible && !document.hidden) go(index + 1); }, 5000);
       };
       wrap.addEventListener('mouseenter', function () { paused = true; });
       wrap.addEventListener('mouseleave', function () { paused = false; });
@@ -692,51 +723,81 @@
       subEl.textContent = playing ? 'Now playing' : 'Ready to play';
     };
 
-    var loadTrack = function () {
-      if (!player) return;
-      player.loadVideoById(list[current].id);
+    var showTitle = function () {
       titleEl.textContent = list[current].title;
       if (videoTitle) videoTitle.textContent = list[current].title;
+    };
+
+    var pendingPlay = false;
+    var loadTrack = function () {
+      showTitle();
+      if (!player) { pendingPlay = true; ensurePlayer(); return; }
+      player.loadVideoById(list[current].id);
       setPlaying(true);
     };
 
-    var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    tag.onerror = function () { titleEl.textContent = 'BGM을 불러오지 못했습니다'; };
-    document.head.appendChild(tag);
+    var timer = null;
+    var startProgress = function () {
+      clearInterval(timer);
+      timer = setInterval(function () {
+        var dur = player.getDuration();
+        if (dur > 0) progress.style.width = (player.getCurrentTime() / dur * 100) + '%';
+      }, 1000);
+    };
+    var stopProgress = function () { clearInterval(timer); timer = null; };
 
-    var prevReady = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = function () {
-      if (typeof prevReady === 'function') prevReady();
-      player = new window.YT.Player('yt-player-iframe', {
-        width: '100%',
-        height: '100%',
-        videoId: list[current].id,
-        playerVars: { autoplay: 0, controls: 1, playsinline: 1 },
-        events: {
-          onReady: function () {
-            player.setVolume(volInput.value * 100);
-            setInterval(function () {
-              if (player && player.getPlayerState && player.getPlayerState() === window.YT.PlayerState.PLAYING) {
-                var dur = player.getDuration();
-                if (dur > 0) progress.style.width = (player.getCurrentTime() / dur * 100) + '%';
+    /* 유튜브 플레이어는 무거워서, 메뉴를 처음 열거나 재생할 때만 불러옵니다. */
+    var requested = false;
+    var ensurePlayer = function () {
+      if (requested) return;
+      requested = true;
+      subEl.textContent = '불러오는 중...';
+      var create = function () {
+        player = new window.YT.Player('yt-player-iframe', {
+          width: '100%',
+          height: '100%',
+          videoId: list[current].id,
+          playerVars: { autoplay: 0, controls: 1, playsinline: 1 },
+          events: {
+            onReady: function () {
+              player.setVolume(volInput.value * 100);
+              subEl.textContent = 'Ready to play';
+              if (pendingPlay) { pendingPlay = false; player.playVideo(); }
+            },
+            onStateChange: function (event) {
+              var S = window.YT.PlayerState;
+              if (event.data === S.PLAYING) { setPlaying(true); startProgress(); }
+              else if (event.data === S.PAUSED || event.data === S.ENDED) {
+                setPlaying(false);
+                stopProgress();
+                if (event.data === S.ENDED) { current = (current + 1) % list.length; loadTrack(); }
               }
-            }, 500);
-          },
-          onStateChange: function (event) {
-            var S = window.YT.PlayerState;
-            if (event.data === S.PLAYING) setPlaying(true);
-            else if (event.data === S.PAUSED || event.data === S.ENDED) {
-              setPlaying(false);
-              if (event.data === S.ENDED) { current = (current + 1) % list.length; loadTrack(); }
             }
           }
-        }
-      });
+        });
+      };
+      if (window.YT && window.YT.Player) { create(); return; }
+      var prevReady = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = function () {
+        if (typeof prevReady === 'function') prevReady();
+        create();
+      };
+      var tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      tag.async = true;
+      tag.onerror = function () {
+        titleEl.textContent = 'BGM을 불러오지 못했습니다';
+        subEl.textContent = '재생을 누르면 다시 시도해요';
+        tag.remove();
+        requested = false;
+      };
+      document.head.appendChild(tag);
     };
+    window.addEventListener('skin:draweropen', ensurePlayer);
+    videoBtn.addEventListener('click', ensurePlayer);
 
     playBtn.addEventListener('click', function () {
-      if (!player || !player.getPlayerState) return;
+      if (!player || !player.getPlayerState) { pendingPlay = true; ensurePlayer(); return; }
       if (player.getPlayerState() === window.YT.PlayerState.PLAYING) player.pauseVideo();
       else player.playVideo();
     });
@@ -792,20 +853,35 @@
       container.addEventListener('mousemove', move);
       container.addEventListener('touchmove', move, { passive: false });
 
+      /* 위치를 변수로 들고 쓰기만 해서 매 프레임 레이아웃 계산을 피하고, 화면에 보일 때만 움직입니다. */
+      var pos = 0;
+      var running = false;
+      var visible = false;
       var step = function () {
-        if (!document.hidden && !reduceMotion.matches) {
-          if (!isDown) {
-            container.scrollLeft += 1;
-            if (container.scrollLeft >= originalWidth) container.scrollLeft -= originalWidth;
-          } else if (container.scrollLeft <= 0) {
-            container.scrollLeft += originalWidth; scrollLeft += originalWidth;
-          } else if (container.scrollLeft >= originalWidth * 2) {
-            container.scrollLeft -= originalWidth; scrollLeft -= originalWidth;
-          }
+        if (!visible || document.hidden || reduceMotion.matches) { running = false; return; }
+        if (!isDown) {
+          pos += 0.6;
+          if (pos >= originalWidth) pos -= originalWidth;
+          container.scrollLeft = pos;
         }
         requestAnimationFrame(step);
       };
-      requestAnimationFrame(step);
+      var run = function () {
+        if (running || !visible) return;
+        running = true;
+        requestAnimationFrame(step);
+      };
+      container.addEventListener('scroll', function () {
+        if (!isDown) return;
+        var x = container.scrollLeft;
+        if (x <= 0) { x += originalWidth; scrollLeft += originalWidth; container.scrollLeft = x; }
+        else if (x >= originalWidth * 2) { x -= originalWidth; scrollLeft -= originalWidth; container.scrollLeft = x; }
+        pos = x % originalWidth;
+      }, { passive: true });
+      if (window.IntersectionObserver) {
+        new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; run(); }).observe(container);
+      } else { visible = true; run(); }
+      document.addEventListener('visibilitychange', run);
     });
   });
 })();
